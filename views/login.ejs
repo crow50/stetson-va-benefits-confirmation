@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('partials/head', { pageTitle: 'Stetson University - Student Login' }) %></head>
+<body>
+  <%- include('partials/header', { heading: 'Stetson University - Veteran Benefits' }) %>
+  <main>
+    <div class="login-wrap">
+      <div class="form-card">
+        <h2>Student Login</h2>
+        <p class="login-sub">Stetson SSO integration coming soon. Enter your name to simulate a student session for demo purposes.</p>
+        <% if (error) { %>
+          <p class="error-msg"><%= error %></p>
+        <% } %>
+        <form method="POST" action="/login">
+          <div style="margin-bottom:14px">
+            <label>Full Name</label>
+            <input name="studentName" required placeholder="e.g. Jane Smith" autocomplete="name">
+          </div>
+          <div>
+            <label>Student ID <span class="optional">(optional)</span></label>
+            <input name="studentId" placeholder="e.g. S12345678" autocomplete="off">
+          </div>
+          <button type="submit">Sign In</button>
+        </form>
+        <a href="/" class="back-link">Back to home</a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<%
+  const status  = result.status;
+  const pt      = result.pt;
+  const rating  = result.rating;
+  const enrolled = result.enrolled;
+  const letters  = result.letters;
+  const ch33     = result.ch33;
+  const icn      = result.icn;
+  const errors   = result.errors || [];
+
+  const reason   = status ? status.notConfirmedReason : null;
+  const isPT     = pt && pt.isPermanentAndTotal;
+  const isTdiu   = pt && pt.isTdiu;
+  const ratingVal = rating ? rating.combinedRating : null;
+  const benefits  = enrolled || [];
+
+  const ch33Known   = ch33 !== null;
+  const ch33Eligible = ch33 && ch33.hasEntitlement;
+  const vreEligible  = ch33Known ? ch33Eligible : ratingVal > 0;
+
+  const nonLetterErrors = errors.filter(e => e.step !== 'letters');
+%>
+
+<% if (!status) { %>
+  <%- include('result-error', { message: 'Status check failed before a response was received.', errors: errors }) %>
+<% } else if (reason === 'MORE_RESEARCH_REQUIRED') { %>
+  <div class="card review">
+    <h2>Flagged for Manual Review</h2>
+    <p>The VA returned <strong>MORE_RESEARCH_REQUIRED</strong>. This does not mean the applicant is not a veteran - additional research is needed.</p>
+    <p class="muted" style="margin-top:10px">Route to Veterans Services for manual verification. Do not deny benefits based on this result.</p>
+  </div>
+<% } else if (reason === 'PERSON_NOT_FOUND') { %>
+  <div class="card review">
+    <h2>Veteran Not Found</h2>
+    <p>No VA record matched the applicant's information. Verify the name, address, and date of birth are correct, then route to Veterans Services if the issue persists.</p>
+  </div>
+<% } else if (reason === 'NOT_TITLE_38') { %>
+  <div class="card not-confirmed">
+    <h2>Not Title 38 Eligible</h2>
+    <p>The applicant's discharge character or service does not meet Title 38 requirements. No VA education benefit is available through this path.</p>
+  </div>
+<% } else if (!status.confirmed) { %>
+  <div class="card not-confirmed">
+    <h2>Not Confirmed</h2>
+    <p>VA records do not confirm Title 38 veteran status<% if (reason) { %> (<%= reason %>)<% } %>.</p>
+  </div>
+<% } else { %>
+  <div class="card confirmed">
+    <h2>Veteran Confirmed <span class="tag green">Title 38</span></h2>
+
+    <div class="grid">
+      <div class="stat">
+        <div class="stat-label">Combined Disability Rating</div>
+        <div class="stat-value"><%= (ratingVal !== null && ratingVal !== undefined) ? ratingVal + '%' : '-' %></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Permanent &amp; Total (P&amp;T)</div>
+        <div class="stat-value <%= isPT ? 'yes' : 'no' %>"><%= isPT ? 'Yes' : 'No' %></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">TDIU</div>
+        <div class="stat-value <%= isTdiu ? 'yes' : 'no' %>"><%= isTdiu ? 'Yes' : 'No' %></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>Post-9/11 GI Bill (Chapter 33)</h3>
+      <% if (ch33 === null) { %>
+        <p class="muted">Chapter 33 entitlement data unavailable.</p>
+      <% } else if (ch33.hasEntitlement) { %>
+        <div class="benefit-row">
+          <span class="badge">Ch. 33</span>
+          <span>Remaining entitlement: <strong><%= ch33.remainingMonths %> mo <%= ch33.remainingDays %> days</strong></span>
+        </div>
+      <% } else { %>
+        <p class="muted">No remaining Chapter 33 entitlement on record.</p>
+      <% } %>
+    </div>
+
+    <div class="section">
+      <h3>VR&amp;E (Chapter 31)</h3>
+      <% if (!ch33Known) { %>
+        <p>This veteran has a service-connected disability rating and <strong>may be eligible for Vocational Rehabilitation &amp; Employment (Ch. 31)</strong>. Formal eligibility requires a VA determination of employment handicap - route to Veterans Services for assessment.</p>
+      <% } else if (vreEligible) { %>
+        <p>This veteran has remaining Chapter 33 entitlement. <strong>VR&amp;E (Ch. 31) eligibility is indicated</strong> - route to Veterans Services for formal employment handicap determination.</p>
+      <% } else { %>
+        <p class="muted">No remaining Chapter 33 entitlement found. Ch. 31 eligibility is unlikely but not ruled out - more research required if the veteran believes they qualify.</p>
+      <% } %>
+    </div>
+
+    <div class="section">
+      <h3>Active VA Benefits</h3>
+      <% if (benefits.length) { %>
+        <% benefits.forEach(function(b) { %>
+          <div class="benefit-row">
+            <span class="badge"><%= b.program_code %></span>
+            <span><%= PROGRAM_LABELS[b.program_code] || b.program_name || b.program_code %></span>
+            <span class="date">Effective <%= (b.award_effective_date || '').slice(0, 10) %></span>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <p class="muted">No active VA compensation or pension benefits on record.</p>
+      <% } %>
+    </div>
+
+    <div class="section">
+      <h3>Benefit Letters</h3>
+      <%- include('letters', { letters: letters, icn: icn, portalMode: portalMode }) %>
+    </div>
+
+    <% if (nonLetterErrors.length) { %>
+      <div class="section warnings">
+        <h3>Partial Errors</h3>
+        <% nonLetterErrors.forEach(function(e) { %>
+          <p><%= e.step %>: <%= e.message %></p>
+        <% }); %>
+      </div>
+    <% } %>
+  </div>
+<% } %>

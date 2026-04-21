@@ -1,0 +1,26 @@
+<% if (!letters) { %>
+  <p class="muted">Letter generation requires <code>letters.read</code> scope - add it to your CCG client to enable this section.</p>
+<% } else { %>
+  <% const visible = letters.filter(l => !EXCLUDED_LETTER_TYPES.has(l.letterType)); %>
+  <% if (!visible.length) { %>
+    <p class="muted">No benefit letters on file for this veteran.</p>
+  <% } else { %>
+    <% visible.forEach(function(l) { %>
+      <div class="letter-row">
+        <form method="POST" action="/letter" style="display:inline">
+          <input type="hidden" name="icn" value="<%= icn %>">
+          <input type="hidden" name="letterType" value="<%= l.letterType %>">
+          <button type="submit" class="letter-btn"><%= l.name || l.letterType %></button>
+        </form>
+        <% if (portalMode) { %>
+          <form method="POST" action="/portal/send-letter" style="display:inline">
+            <input type="hidden" name="icn" value="<%= icn %>">
+            <input type="hidden" name="letterType" value="<%= l.letterType %>">
+            <input type="hidden" name="letterName" value="<%= l.name || l.letterType %>">
+            <button type="submit" class="letter-btn send-btn">Send to VS Office</button>
+          </form>
+        <% } %>
+      </div>
+    <% }); %>
+  <% } %>
+<% } %>

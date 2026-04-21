@@ -1,0 +1,115 @@
+<div class="form-card">
+  <h2>Benefits Eligibility Check</h2>
+  <form method="POST" action="<%= formAction %>">
+
+    <div class="affiliation">
+      <label>
+        <input type="radio" name="affiliationType" value="self" <%= formValues.affiliationType === 'self' ? 'checked' : '' %> required>
+        I am a Veteran
+      </label>
+      <label>
+        <input type="radio" name="affiliationType" value="dependent" <%= formValues.affiliationType === 'dependent' ? 'checked' : '' %>>
+        I am a Dependent of a Veteran
+      </label>
+      <label>
+        <input type="radio" name="affiliationType" value="none" <%= formValues.affiliationType === 'none' ? 'checked' : '' %>>
+        Not a Veteran / Dependent
+      </label>
+    </div>
+
+    <div id="section-self" <%= formValues.affiliationType !== 'self' ? 'hidden' : '' %>>
+      <fieldset>
+        <legend>Your Information</legend>
+        <div class="fields">
+          <div>
+            <label>First Name</label>
+            <input name="firstName" required value="<%= formValues.firstName || '' %>">
+          </div>
+          <div>
+            <label>Last Name</label>
+            <input name="lastName" required value="<%= formValues.lastName || '' %>">
+          </div>
+          <div>
+            <label>Date of Birth</label>
+            <input name="dob" type="date" value="<%= formValues.dob || '' %>">
+          </div>
+          <div class="full">
+            <label>Street Address Line 1</label>
+            <input name="address" required value="<%= formValues.address || '' %>">
+          </div>
+          <div class="full">
+            <label>Street Address Line 2 <span class="optional">(optional)</span></label>
+            <input name="address2" value="<%= formValues.address2 || '' %>">
+          </div>
+          <div>
+            <label>City</label>
+            <input name="city" required value="<%= formValues.city || '' %>">
+          </div>
+          <div>
+            <label>State</label>
+            <input name="state" maxlength="2" placeholder="TX" required value="<%= formValues.state || '' %>">
+          </div>
+          <div>
+            <label>ZIP Code</label>
+            <input name="zip" required value="<%= formValues.zip || '' %>">
+          </div>
+        </div>
+      </fieldset>
+    </div>
+
+    <div id="section-dependent" <%= formValues.affiliationType !== 'dependent' ? 'hidden' : '' %>>
+      <fieldset>
+        <legend>Veteran Parent / Sponsor Information</legend>
+        <div class="fields">
+          <div>
+            <label>Sponsor First Name</label>
+            <input name="sponsorFirstName" value="<%= formValues.sponsorFirstName || '' %>">
+          </div>
+          <div>
+            <label>Sponsor Last Name</label>
+            <input name="sponsorLastName" value="<%= formValues.sponsorLastName || '' %>">
+          </div>
+          <div>
+            <label>Sponsor Date of Birth</label>
+            <input name="sponsorDob" type="date" value="<%= formValues.sponsorDob || '' %>">
+          </div>
+          <div class="full">
+            <label>Sponsor Street Address Line 1</label>
+            <input name="sponsorAddress" value="<%= formValues.sponsorAddress || '' %>">
+          </div>
+          <div class="full">
+            <label>Sponsor Street Address Line 2 <span class="optional">(optional)</span></label>
+            <input name="sponsorAddress2" value="<%= formValues.sponsorAddress2 || '' %>">
+          </div>
+          <div>
+            <label>City</label>
+            <input name="sponsorCity" value="<%= formValues.sponsorCity || '' %>">
+          </div>
+          <div>
+            <label>State</label>
+            <input name="sponsorState" maxlength="2" placeholder="TX" value="<%= formValues.sponsorState || '' %>">
+          </div>
+          <div>
+            <label>ZIP Code</label>
+            <input name="sponsorZip" value="<%= formValues.sponsorZip || '' %>">
+          </div>
+        </div>
+      </fieldset>
+    </div>
+
+    <div id="section-none" <%= formValues.affiliationType !== 'none' ? 'hidden' : '' %>>
+      <p class="muted">No additional information needed. Submit to confirm routing.</p>
+    </div>
+
+    <button type="submit">Check Benefits Eligibility</button>
+  </form>
+</div>
+
+<script>
+  const radios = document.querySelectorAll('input[name="affiliationType"]');
+  radios.forEach(r => r.addEventListener('change', function () {
+    document.getElementById('section-self').hidden      = this.value !== 'self';
+    document.getElementById('section-dependent').hidden = this.value !== 'dependent';
+    document.getElementById('section-none').hidden      = this.value !== 'none';
+  }));
+</script>

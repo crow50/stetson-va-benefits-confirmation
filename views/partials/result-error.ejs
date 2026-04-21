@@ -1,0 +1,9 @@
+<div class="card error">
+  <h2>Lookup Error</h2>
+  <p><%= message %></p>
+  <% if (errors && errors.length) { %>
+    <% errors.forEach(function(e) { %>
+      <p class="muted"><%= e.step %>: <%= e.message %></p>
+    <% }); %>
+  <% } %>
+</div>

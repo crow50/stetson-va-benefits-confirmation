@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('partials/head', { pageTitle: 'Stetson University - Veteran Benefits' }) %></head>
+<body>
+  <%- include('partials/header', { heading: 'Stetson University - Veteran Benefits' }) %>
+  <main>
+    <div class="landing">
+      <div class="path-card">
+        <h2>New Applicant / Guest</h2>
+        <p>Look up VA benefits without signing in. For new applicants, dependents checking sponsor eligibility, or admissions staff.</p>
+        <a href="/guest" class="btn btn-outline">Continue as Guest</a>
+      </div>
+      <div class="path-card">
+        <h2>Stetson Student</h2>
+        <p>Sign in to access your personalized benefits dashboard, send letters to Veterans Services, and get help with VA forms.</p>
+        <a href="/login" class="btn btn-primary">Student Login</a>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

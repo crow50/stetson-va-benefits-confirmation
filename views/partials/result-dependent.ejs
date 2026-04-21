@@ -1,0 +1,66 @@
+<%
+  const status = result.status;
+  const pt = result.pt;
+  const deaEligible = result.deaEligible;
+  const errors = result.errors || [];
+  const reason = status ? status.notConfirmedReason : null;
+  const isPT   = pt && pt.isPermanentAndTotal;
+  const isTdiu = pt && pt.isTdiu;
+%>
+
+<% if (!status) { %>
+  <%- include('result-error', { message: 'Status check failed before a response was received.', errors: errors }) %>
+<% } else if (reason === 'MORE_RESEARCH_REQUIRED') { %>
+  <div class="card review">
+    <h2>Flagged for Manual Review</h2>
+    <p>The VA returned <strong>MORE_RESEARCH_REQUIRED</strong> for the sponsor's record. This does not mean the sponsor is not a veteran - additional research is needed.</p>
+    <p class="muted" style="margin-top:10px">Route to Veterans Services for manual verification before determining Chapter 35 eligibility.</p>
+  </div>
+<% } else if (reason === 'PERSON_NOT_FOUND') { %>
+  <div class="card review">
+    <h2>Sponsor Not Found</h2>
+    <p>No VA record matched the sponsor's information. Verify the name, address, and date of birth are correct.</p>
+    <p class="muted" style="margin-top:10px">If the information is correct, route to Veterans Services for manual follow-up.</p>
+  </div>
+<% } else if (!status.confirmed) { %>
+  <div class="card not-confirmed">
+    <h2>Sponsor Not Confirmed as Veteran</h2>
+    <p>VA records do not confirm the sponsor holds Title 38 veteran status<% if (reason) { %> (<%= reason %>)<% } %>.</p>
+    <p class="muted" style="margin-top:10px">Chapter 35 (DEA) eligibility requires a confirmed veteran sponsor. No VA education benefit is available through this path.</p>
+  </div>
+<% } else { %>
+  <div class="card confirmed">
+    <h2>Sponsor Verified <span class="tag green">Title 38</span></h2>
+
+    <div class="grid">
+      <div class="stat">
+        <div class="stat-label">Permanent &amp; Total (P&amp;T)</div>
+        <div class="stat-value <%= isPT ? 'yes' : 'no' %>"><%= isPT ? 'Yes' : 'No' %></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">TDIU</div>
+        <div class="stat-value <%= isTdiu ? 'yes' : 'no' %>"><%= isTdiu ? 'Yes' : 'No' %></div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Chapter 35 (DEA) Eligible</div>
+        <div class="stat-value <%= deaEligible ? 'yes' : 'no' %>"><%= deaEligible ? 'Yes' : 'No' %></div>
+      </div>
+    </div>
+
+    <% if (!deaEligible) { %>
+      <div class="section">
+        <h3>GI Bill Transfer</h3>
+        <p class="muted">The sponsor is a confirmed veteran but does not meet the P&amp;T threshold for Chapter 35. The sponsor may be able to transfer unused Post-9/11 GI Bill (Chapter 33) benefits to this dependent - confirm with Veterans Services.</p>
+      </div>
+    <% } %>
+
+    <% if (errors.length) { %>
+      <div class="section warnings">
+        <h3>Partial Errors</h3>
+        <% errors.forEach(function(e) { %>
+          <p><%= e.step %>: <%= e.message %></p>
+        <% }); %>
+      </div>
+    <% } %>
+  </div>
+<% } %>

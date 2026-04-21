@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('partials/head', { pageTitle: 'Stetson University - Veteran Benefits Lookup' }) %></head>
+<body>
+  <%- include('partials/header', { heading: 'Stetson University - Veteran Benefits Lookup' }) %>
+  <main>
+    <a href="/" class="back-link" style="display:block; margin-bottom:16px;">&#8592; Back to Home</a>
+    <%- include('partials/form', { formValues: formValues, formAction: '/guest/lookup' }) %>
+    <% if (resultType === 'none') { %>
+      <%- include('partials/result-none') %>
+    <% } else if (resultType === 'dependent') { %>
+      <%- include('partials/result-dependent', { result: result }) %>
+    <% } else if (resultType === 'veteran') { %>
+      <%- include('partials/result-veteran', { result: result, portalMode: false }) %>
+    <% } else if (resultType === 'error') { %>
+      <%- include('partials/result-error', { message: result.message, errors: result.errors || [] }) %>
+    <% } %>
+  </main>
+</body>
+</html>

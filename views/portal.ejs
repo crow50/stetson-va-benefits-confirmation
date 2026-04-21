@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><%- include('partials/head', { pageTitle: 'Stetson University - Student Benefits Portal' }) %></head>
+<body>
+  <%- include('partials/header', { heading: 'Stetson University - Student Benefits Portal' }) %>
+  <div class="portal-bar">
+    <span>Welcome, <strong><%= student.name %></strong><% if (student.studentId) { %> &nbsp;&middot;&nbsp; <%= student.studentId %><% } %></span>
+    <span style="display:flex; gap:16px;"><a href="/portal">Home</a><a href="/logout">Sign Out</a></span>
+  </div>
+  <main>
+    <% if (alert) { %>
+      <div class="alert alert-success"><%= alert %></div>
+    <% } %>
+
+    <div class="portal-resources">
+      <div class="resource-card">
+        <h3>VA Forms</h3>
+        <ul>
+          <li><a href="https://www.va.gov/find-forms/about-form-22-1990/" target="_blank">22-1990 - Application for Education Benefits</a></li>
+          <li><a href="https://www.va.gov/find-forms/about-form-22-1995/" target="_blank">22-1995 - Change of Program or Place of Training</a></li>
+          <li><a href="https://www.va.gov/find-forms/about-form-22-5490/" target="_blank">22-5490 - Dependents Application (Ch. 35)</a></li>
+          <li><a href="https://www.va.gov/find-forms/about-form-22-0994/" target="_blank">22-0994 - VET TEC Application</a></li>
+          <li><a href="https://www.va.gov/find-forms/about-form-21-22/" target="_blank">21-22 - Appoint a VSO Representative</a></li>
+        </ul>
+      </div>
+      <div class="resource-card">
+        <h3>VA Resources</h3>
+        <ul>
+          <li><a href="https://www.va.gov/education/check-remaining-post-9-11-gi-bill-benefits/" target="_blank">Check GI Bill Remaining Entitlement</a></li>
+          <li><a href="https://www.va.gov/careers-employment/vocational-rehabilitation/" target="_blank">VR&amp;E (Chapter 31) Overview</a></li>
+          <li><a href="https://www.va.gov/education/survivor-dependent-education-assistance/" target="_blank">Chapter 35 (DEA) Overview</a></li>
+          <li><a href="https://www.va.gov/health-care/" target="_blank">VA Health Care Enrollment</a></li>
+          <li><a href="https://gibill.custhelp.va.gov/" target="_blank">GI Bill Customer Support</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <%- include('partials/form', { formValues: formValues, formAction: '/portal/lookup' }) %>
+
+    <% if (resultType === 'none') { %>
+      <%- include('partials/result-none') %>
+    <% } else if (resultType === 'dependent') { %>
+      <%- include('partials/result-dependent', { result: result }) %>
+    <% } else if (resultType === 'veteran') { %>
+      <%- include('partials/result-veteran', { result: result, portalMode: true }) %>
+    <% } else if (resultType === 'error') { %>
+      <%- include('partials/result-error', { message: result.message, errors: result.errors || [] }) %>
+    <% } %>
+  </main>
+</body>
+</html>
