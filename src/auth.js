@@ -26,8 +26,9 @@ function buildClientAssertion(clientId, audience) {
 async function getAccessToken(scope, launchIcn = null, opts = {}) {
   const tokenUrl = opts.tokenUrl || process.env.VA_TOKEN_URL;
   const clientId = opts.clientId || process.env.VA_CLIENT_ID;
-  // VA CCG requires aud = the token endpoint being called
-  const audience = tokenUrl;
+  // aud must be the Okta token endpoint (passed via opts.audience or VA_AUDIENCE).
+  // The VA gateway proxies to Okta, and Okta validates the JWT against its own URL.
+  const audience = opts.audience || process.env.VA_AUDIENCE || tokenUrl;
 
   const now = Date.now();
   const cacheKey = `${tokenUrl}:${scope}${launchIcn ? ':' + launchIcn : ''}`;
