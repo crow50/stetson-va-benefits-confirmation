@@ -26,7 +26,8 @@ function buildClientAssertion(clientId, audience) {
 async function getAccessToken(scope, launchIcn = null, opts = {}) {
   const tokenUrl = opts.tokenUrl || process.env.VA_TOKEN_URL;
   const clientId = opts.clientId || process.env.VA_CLIENT_ID;
-  const audience = opts.audience || process.env.VA_AUDIENCE || tokenUrl;
+  // VA CCG requires aud = the token endpoint being called
+  const audience = tokenUrl;
 
   const now = Date.now();
   const cacheKey = `${tokenUrl}:${scope}${launchIcn ? ':' + launchIcn : ''}`;
